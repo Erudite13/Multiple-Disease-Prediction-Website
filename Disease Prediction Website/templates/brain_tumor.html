@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet" />
+
+    <style>
+        body{
+            background: linear-gradient(90deg, #50C4ED 0%, #387ADF 100% 0.5);
+        }
+
+        form div{
+            margin: 2px 2px;
+            padding: 2px 2px;
+        }
+        form div input{
+            width: 40%;
+            position: relative;
+            display: block;
+        }
+        #form{
+            margin: 20px 10px;
+            padding: 20px 10px;
+            width: 40%;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        
+
+   
+    
+    }
+
+.container {
+    display: flex;
+    font-size: 14px;
+    height: 100vh;
+    background: linear-gradient(90deg, #50C4ED 0%, #387ADF 100%);
+}
+
+.navbar {
+    margin: auto;
+    padding: 0.5rem 1.5rem;
+    background: linear-gradient(90deg, #50C4ED 0%, #387ADF 100%);
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    justify-content: right;
+    justify-items: right;
+    text-align: right;
+    
+}
+
+.nav-link, .drop-down li {
+    list-style: none;
+    height: 100%;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: currentColor;
+}
+
+.drop-down {
+    position: absolute;
+    padding: 0.5rem 0;
+    margin: 0.5rem -0.5rem;
+    background: antiquewhite;
+    color: black;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    font-size: 12px;
+    display: none;
+}
+
+.nav-link:hover {
+    background-color: black;
+    color: #fff;
+    border-radius: 0.5rem;
+}
+
+.services:hover .drop-down {
+    display: block;
+}
+
+.services a {
+    display: flex;
+    align-items: center;
+}
+
+.services .dropdown-icon {
+    font-size: 18px;
+    position: relative;
+    right: -5px;
+    transform: rotate(0deg);
+    transition: 0.3s ease-in-out all;
+}
+
+.services:hover .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.drop-down li:hover {
+    background: black;
+    color: #fff;
+    border-radius: 0.5rem;
+} 
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div>
+                <img class="img" src="static/Medical.png" alt="Logo" width="30">
+          <a id="disease" class="toggleColour text-white no-underline hover:no-underline font-bold text-2xl lg:text-4xl" href="#">
+            <strong>BRAIN TUMOR <sub>PREDICTION</sub></strong> <br> 
+          </a>     
+            </div>
+            <ul class="nav-links">
+                <li class="nav-link">
+                    <a href="{{ url_for('home') }}">Home</a>
+                </li>
+                <li class="nav-link services">
+                    <a href="#">Disease
+                    </a>
+                    <ul class="drop-down">
+                        <li><a href="{{ url_for('diabetesPage') }}">Diabetes</a></li>
+                        <li><a href="{{ url_for('cancerPage') }}">Breast Cancer</a></li>
+                        <li><a href="{{ url_for('chronicPage') }}">Chronic Disease</a></li>
+                        <li><a href="{{ url_for('heartPage') }}">Heart Disease</a></li>
+                        <li><a href="{{ url_for('tumorPage') }}">Brain Tumor</a></li>
+                        
+                    </ul>
+                </li>
+                <li class="nav-link">
+                    <a href="#">About</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <center><h3>Please upload the image of the MRI scan </h3></center>
+            <form class="form-horizontal" action="/model_predict" method="POST" enctype="multipart/form-data">
+                <center>
+                <input onchange="readURL(this);" type="file" name="image" placeholder="Upload Image">
+                <br>
+                <br>
+                <img class="img-fluid" id="blah" src="#" alt="UPLOADED IMAGE WILL APPEAR HERE" />
+                <br>
+                <br>
+                <input class="btn btn-info" type="submit">
+                </center>
+            </form>
+            <script>
+                $(document).ready(function () {
+    // Init
+    $('.image-section').hide();
+    $('.loader').hide();
+    $('#result').hide();
+
+    // Upload Preview
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                $('#imagePreview').hide();
+                $('#imagePreview').fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $("#imageUpload").change(function () {
+        $('.image-section').show();
+        $('#btn-predict').show();
+        $('#result').text('');
+        $('#result').hide();
+        readURL(this);
+    });
+
+    // Predict
+    $('#btn-predict').click(function () {
+        var form_data = new FormData($('#upload-file')[0]);
+
+        // Show loading animation
+        $(this).hide();
+        $('.loader').show();
+
+        // Make prediction by calling api /predict
+        $.ajax({
+            type: 'POST',
+            url: '/model_predict',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            async: true,
+            success: function (data) {
+                // Get and display the result
+                $('.loader').hide();
+                $('#result').fadeIn(600);
+                $('#result').text(' Result:  ' + data);
+                console.log('Success!');
+            },
+        });
+    });
+
+});
+            </script>
+</body>
+</html>
