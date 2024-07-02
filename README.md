@@ -16,7 +16,7 @@
 </ul>
 
 <h2>Screenshots</h2>
-<p><img src="homepage.png" alt="Screenshot 1"></p>
+<p><img src="Homepage.png" alt="Screenshot 1"></p>
 <p><img src="Submitdetail.png" alt="Screenshot 2"></p>
 <p><img src="image.png" alt="Screenshot 3"></p>
 
